@@ -14,6 +14,7 @@
     "@tonclient/core": "^1.10.2",
     "@tonclient/lib-web": "^1.10.2",
     "light-server": "^2.9.1",
+    "lite-server": "^2.6.1",
     "utils": "^0.3.1"
   },
   "devDependencies": {
