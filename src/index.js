@@ -57,7 +57,7 @@ window.addEventListener("load", async () => {
 
         
 
-        $("#accordion").html($("#accordion").html()+'<div class="card chosen">    <div class="card-header p-0 " id="heading'+i+'" >       <a class="collapsed setcontent" data-toggle="collapse" data-target="#collapse'+i+'" aria-expanded="false" aria-controls="collapse'+i+'">    <div class="contest-heading">                 '+  new TextDecoder().decode(hex2a(result2.title)) +'               </div>   </a>  </div>     <div id="collapse'+i+'" class="collapse" aria-labelledby="heading'+i+'" data-parent="#accordion"> <div class="lds-ring"><div></div><div></div><div></div><div></div></div>       <div class="card-body" id="content'+i+'"></div>     </div>   </div>');
+        $("#accordion").html($("#accordion").html()+'<div class="card chosen"><div class="card-header p-0 " id="heading'+i+'" ><a class="collapsed setcontent" data-toggle="collapse" data-target="#collapse'+i+'" aria-expanded="false" aria-controls="collapse'+i+'"><div class="contest-heading">'+new TextDecoder().decode(hex2a(result2.title))+'</div></a></div><div id="collapse'+i+'" class="collapse" aria-labelledby="heading'+i+'" data-parent="#accordion"><div class="lds-ring"><div></div><div></div><div></div><div></div></div><div class="card-body" id="content'+i+'"></div></div></div>');
         
         
 
@@ -130,16 +130,21 @@ window.addEventListener("load", async () => {
        }
        else{
            const result6 = await (await acc.runLocal("listContenders",{})).decoded.output;
-           
+           var result8 = [];
            for(var j = 0; j < result6.ids.length; j++){
                const result7 = await (await acc.runLocal("getStatsFor",{"id":result6.ids[j]})).decoded.output;
-               console.log(JSON.stringify(result7));
+               result7["address"]=result6.addresses[j];
+               result8 = result8.concat(result7);
+            }
+               result8.sort(sortByProperty("avgHi","avgLo"));
+               result8.reverse();
+               for(var j = 0; j < result6.ids.length; j++){
                if(j==0){
                 $("#content"+i).html('<button type="button" class="btn btn-primary btnExport">Export</button>');
                    $("#content"+i).html($("#content"+i).html()+'<table id="tblExportGrid'+i+'" class="table"> <thead> <tr> <th scope="col">Address</th> <th scope="col">Average</th> <th scope="col">Accepted</th> <th scope="col">Abstained</th> <th scope="col">Rejected</th> <th scope="col">Reward</th></tr> </thead> <tbody></tbody></table>');
                }
                
-                   $("#content"+i+" tbody").html( $("#content"+i+" tbody").html()+'<tr><td class="contestant-address" data-title="'+result6.addresses[j]+'">'+result6.addresses[j].substr(0,10)+'</td><td class="ExportLabelTD">'+result7.avgHi+"."+result7.avgLo+'</td><td class="ExportLabelTD">'+result7.accepted+'</td><td class="ExportLabelTD">'+result7.abstained+'</td><td class="ExportLabelTD">'+result7.rejected+'</td><td><input type="text" class="form-control ExportValueTD" id="'+i+'/'+j+'"></td></tr> ')
+                   $("#content"+i+" tbody").html( $("#content"+i+" tbody").html()+'<tr><td class="contestant-address" data-title="'+result8[j].address+'">'+result6.addresses[j].substr(0,10)+'</td><td class="ExportLabelTD">'+result8[j].avgHi+"."+result8[j].avgLo+'</td><td class="ExportLabelTD">'+result8[j].accepted+'</td><td class="ExportLabelTD">'+result8[j].abstained+'</td><td class="ExportLabelTD">'+result8[j].rejected+'</td><td><input type="text" class="form-control ExportValueTD" id="'+i+'/'+j+'"></td></tr>')
                    
                 
            }
@@ -316,6 +321,45 @@ function isNullOrUndefinedWithEmpty(text){
  else
     false;
 }
+
+function sortByProperty(property1,property2){  
+    return function(a,b){  
+       if(a[property1] > b[property1])  
+          return 1;  
+       else if(a[property1] < b[property1])  
+          return -1; 
+        else{
+            if(a[property2] > b[property2])  
+          return 1;  
+          else if(a[property2] < b[property2])  
+          return -1;
+        }   
+   
+       return 0;  
+    }  
+ }
+
+
+ $("#myInput").keyup(function(){
+    // Declare variables
+    var input, filter, card_div, card_body, i, txtValue;
+    input = document.getElementById('myInput');
+    filter = input.value.toUpperCase();
+    card_div = document.getElementsByClassName("chosen");
+    
+  
+    // Loop through all list items, and hide those who don't match the search query
+    for (i = 0; i < card_div.length; i++) {
+        card_body =  card_div[i].getElementsByClassName('contest-heading')[0];
+      txtValue = card_body.textContent || card_body.innerText;
+      console.log(txtValue);
+      if (txtValue.toUpperCase().indexOf(filter) ==0) {
+        card_div[i].style.display = "";
+      } else {
+        card_div[i].style.display = "none";
+      }
+    }
+  });
 
 
    
