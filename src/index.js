@@ -12,6 +12,7 @@ const client = new TonClient({
 
 var result8 =[];
 var result1 =[];
+var result9 =[];
 var index;
 var asc;
 
@@ -20,6 +21,9 @@ var asc;
 window.addEventListener("load", async () => {
 
     $("#contest_result").css("display","none");
+    $("#myInput").css("display","none");
+    $("#filter").css("display","none");
+    $("i").css("display","none");
     var unix = Math.round(Date.now()/1000);
     
     
@@ -59,11 +63,49 @@ window.addEventListener("load", async () => {
         
         const acc = new Account({abi:ContestContract},{address});
         const result2 = await (await acc.runLocal("getContestInfo",{})).decoded.output;
+        result9[i]=result2;
+        const result3 = await (await acc.runLocal("getContestProgress",{})).decoded.output;
+
+        var contestunix = result3.contestDeadline;
+           var votingunix = result3.votingDeadline;
+           var unix_now = Math.round(Date.now()/1000);
+       
+           if(unix_now<votingunix && unix_now>contestunix){
+               
+            result9[i].status="voting-in-progress";
+               
+               
+           }
+           else if(unix_now<contestunix){
+
+            const result4 = await (await acc.runLocal("contestStartCountdown",{})).decoded.output;  
+            var contest_start_time= result4["secondsLeft"];
+
+               if(contest_start_time<0){
+                result9[i].status="contest-in-progress";
+               
+                }
+           
+                else {
+                  result9[i].status="contest-not-started";
+            
+                }
+           
+            }
+
+           else{
+            result9[i].status="contest-ended";
+           }
+
+
+
+
+        
         
 
         
 
-        $("#accordion").html($("#accordion").html()+'<div class="card chosen"><div class="card-header p-0 " id="heading'+i+'" ><a class="collapsed setcontent" data-toggle="collapse" data-target="#collapse'+i+'" aria-expanded="false" aria-controls="collapse'+i+'"><div class="contest-heading">'+new TextDecoder().decode(hex2a(result2.title))+'</div></a></div><div id="collapse'+i+'" class="collapse" aria-labelledby="heading'+i+'" data-parent="#accordion"><div class="lds-ring"><div></div><div></div><div></div><div></div></div><div class="card-body" id="content'+i+'"></div><div id="timer_countdown"></div></div></div>');
+        $("#accordion").html($("#accordion").html()+'<div class="card chosen filter'+i+'"><div class="card-header p-0 " id="heading'+i+'" ><a class="collapsed setcontent" data-toggle="collapse" data-target="#collapse'+i+'" aria-expanded="false" aria-controls="collapse'+i+'"><div class="contest-heading">'+new TextDecoder().decode(hex2a(result2.title))+'</div></a></div><div id="collapse'+i+'" class="collapse" aria-labelledby="heading'+i+'" data-parent="#accordion"><div class="lds-ring"><div></div><div></div><div></div><div></div></div><div class="card-body" id="content'+i+'"></div><div id="timer_countdown"></div></div></div>');
         
         
 
@@ -75,7 +117,9 @@ window.addEventListener("load", async () => {
     
     $(".loading .lds-ring").css("display","none");
     $("#contest_result").css("display","block");
-    
+    $("#myInput").css("display","block");
+    $("#filter").css("display","block");
+    $("i").css("display","block");
      
     function hex2a(hex) {
         const bytes = new Uint8Array(hex.length / 2);
@@ -165,7 +209,7 @@ window.addEventListener("load", async () => {
                 }
                    result8.sort(sortByProperty("avgHi","avgLo","desc"));
                    result8.reverse();
-                   $("#content"+i).html('<div class="row"> <div class="form-group col"> <label for="field-name">Field</label> <select id="field-name" class="form-control"> <option value="1">Average</option> <option value="2">Accepted</option> <option value="3">Abstained</option> <option value="4">Rejected</option> </select> </div> <div class="form-group col"> <label for="field-order">Order</label> <select id="field-order" class="form-control"> <option value="1">Descending</option> <option value="2">Ascending</option> </select> </div><button type="button" class="btn btn-primary btnReorder col">Reorder</button></div> <button type="button" class="btn btn-primary btnExport">Export Table</button>');
+                   $("#content"+i).html('<div class="row"> <div class="form-group col"> <label for="field-name">Field</label> <select id="field-name" class="form-control"> <option value="1">Average</option> <option value="2">Accepted</option> <option value="3">Abstained</option> <option value="4">Rejected</option> </select> </div> <div class="form-group col"> <label for="field-order">Order</label> <select id="field-order" class="form-control"> <option value="1">Descending</option> <option value="2">Ascending</option> </select> </div><button type="button" class="btn btn-primary btnReorder col d-inline align-bottom">Reorder</button></div> <button type="button" class="btn btn-info btnExport mt-3">Export Table</button>');
                    $("#content"+i).html($("#content"+i).html()+'<table id="tblExportGrid'+i+'" class="table"> <thead> <tr> <th scope="col">Address</th> <th scope="col">Average</th> <th scope="col">Accepted</th> <th scope="col">Abstained</th> <th scope="col">Rejected</th> <th scope="col">Reward</th></tr> </thead> <tbody></tbody></table>');
                    insert(result8,i);
                    
@@ -371,6 +415,25 @@ if(j==0){
     var i = id_be.substr(8,);
     var $table = $("#tblExportGrid"+i);
     ExportHTMLTableToExcel($table);
+ });
+
+ $(".container").on('click','#filter-button',function(){
+
+  var filters=[];
+  $(".form-check-input:checked").each(function() {
+    filters.push($(this).val());
+  });
+    
+  for (var i = 0; i < result1.length; i++){
+      if(filters.includes(result9[i].status)){
+        $(".filter"+i).css("display","block");
+      }
+      else{
+        $(".filter"+i).css("display","none");
+      }
+  }
+
+
  });
 
 function ExportHTMLTableToExcel($table) {

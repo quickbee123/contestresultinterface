@@ -4,16 +4,44 @@
     <title>TON Client Example</title>
     <meta name="description" content="TON Client Example">
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     
     
 </head>
-<script src="./main.js" charset="UTF-8" async defer></script>
+
 <body>
     <div class="container">
         <h1>Contest Results</h1>
         <i class="fa fa-search icon fa-2x" aria-hidden="true"></i>
         <input type="text" class="input-field" id="myInput" placeholder="Search for names..">
+        <div id="filter">
+         
+          <div class="form-check form-check-inline align-middle">
+          
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="contest-not-started" checked>
+            <label class="form-check-label checkbox-inline" for="inlineCheckbox1"></label>Upcoming Contests</label>
+          </div>
+            <div class="form-check form-check-inline align-middle">
+            
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="contest-in-progress" checked>
+            <label class="form-check-label checkbox-inline" for="inlineCheckbox2"></label>Contests in progress</label>
+          </div>
+            <div class="form-check form-check-inline align-middle">
+            
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="voting-in-progress" checked>
+            <label class="form-check-label checkbox-inline" for="inlineCheckbox3"></label>Voting in progress</label>
+          </div>
+            <div class="form-check form-check-inline align-middle">
+            
+            <input class="form-check-input" type="checkbox" id="inlineCheckbox4" value="contest-ended" checked>
+            <label class="form-check-label checkbox-inline" for="inlineCheckbox4"></label>Finished Contests</label>
+          </div>
+          <div class="form-check form-check-inline align-middle">
+          <button type="button" class="btn btn-primary px-3" id="filter-button">Filter</button>
+          </div>
+          
+        </div>
+        
         <div id="contest_result">
           <div id="accordion">
 
@@ -23,10 +51,11 @@
     </div>
 
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://use.fontawesome.com/e68562b4ef.js"></script>
+<script src="./main.js" charset="UTF-8" async defer></script>
 </body>
 <style>
 
@@ -36,6 +65,12 @@ body {
 	 background: #ecf0f1;
 	 padding: 0 1em 1em;
 }
+
+#filter{
+  margin: 5px;
+}
+
+
 
 #myInput {
   margin: 5px;
@@ -173,8 +208,8 @@ a:focus, a:hover {
 
 .btnExport{
   float: right;
-  padding: 5px;
-  background-color: rgb(247, 117, 100);
+  padding: 10px;
+  
   margin-top: 5px;
   margin-bottom: 5px;
 }
@@ -235,6 +270,16 @@ a:focus, a:hover {
   align-items: center;
   justify-content: center;
   font-size: 48px;
+}
+
+
+.btnReorder{
+  height: calc(1.5em + .75rem + 2px);
+  margin-top: auto;
+}
+
+.form-group {
+    margin-bottom: 0px;
 }
 
 
